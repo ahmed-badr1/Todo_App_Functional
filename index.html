@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <div class="container">
+
+      <div class="header">
+        <h1>Todo App</h1>
+        <p>Manage and track your tasks; it makes your life easier.</p>
+      </div>
+
+      <section class="stats">
+        <div class="stat-item">
+          <p class="stat-number" id="totalCount">0</p>
+          <p class="stat-label">Total</p>
+        </div>
+        <div class="stat-item">
+          <p class="stat-number" id="activeCount">0</p>
+          <p class="stat-label">Active</p>
+        </div>
+        <div class="stat-item">
+          <p class="stat-number" id="completedCount">0</p>
+          <p class="stat-label">Completed</p>
+        </div>
+      </section>
+
+      <section class="add-todo-section">
+        <form id="addForm" class="add-form">
+          <input class="task-input" type="text" id="taskInput" placeholder="What needs to be done?" required>
+          <button type="submit" class="btn btn-primary" id="addBtn">Add Todo</button>
+        </form>
+      </section>
+
+      <section id="todosContainer" class="todos-list"></section>
+    </div>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
