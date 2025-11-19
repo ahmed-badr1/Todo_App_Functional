@@ -35,6 +35,14 @@ function deleteTodo(id) {
   renderTasks();
 }
 
+function editTodoTitle(id, newTitle) {
+  const targetTodo = todos.find(todo => todo.id === id);
+  if (!targetTodo) return;
+
+  targetTodo.title = escapeHTML(newTitle);
+  renderTasks();
+}
+
 
 function updateStats() {
   totalCount.textContent = todos.length;
@@ -73,7 +81,8 @@ function renderTasks() {
         <p class="todo-created-time">Created at: <time datetime="${todo.createdAt.split("T")[0]}">${todo.createdAt.split("T")[0]}</time></p>
       </div>
       <div class="todo-actions">
-      <button class="btn btn-delete">Delete</button>
+      <button class="btn btn-edit">Edit</button>
+        <button class="btn btn-delete">Delete</button>
       </div>
     </div>
   `).join('');
@@ -100,5 +109,38 @@ todosContainer.addEventListener("click", (event) => {
   if (event.target.matches('.btn-delete')) {
     const targetTodoId = +(event.target.closest('.todo-item')?.dataset.id);
     deleteTodo(targetTodoId);
+  }
+
+  if (event.target.matches('.btn-edit')) {
+    const targetTodo = event.target.closest('.todo-item');
+    const targetTodoId = +targetTodo?.dataset.id;
+    const titleElement = targetTodo.querySelector('.todo-title');
+    const currentTitle = titleElement.textContent;
+
+    // create input to take new title from user
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'edit-input';
+    input.value = currentTitle;
+
+    // Replace Title with Input
+    titleElement.replaceWith(input);
+    input.focus();
+    input.select();
+
+    function saveEdit() {
+      const newTitle = input.value.trim();
+      if (newTitle) {
+        editTodoTitle(targetTodoId, newTitle);
+      } else {
+        renderTasks();
+      }
+    }
+
+    input.addEventListener('blur', saveEdit, {once: true});
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') saveEdit();
+      if (event.key === 'Escape') renderTasks();
+    })
   }
 })
