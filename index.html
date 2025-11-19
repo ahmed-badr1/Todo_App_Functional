@@ -32,9 +32,16 @@
 
       <section class="add-todo-section">
         <form id="addForm" class="add-form">
-          <input class="task-input" type="text" id="taskInput" placeholder="What needs to be done?" required>
+          <input class="task-input" type="text" id="taskInput" placeholder="What needs to be done?" autocomplete="off" required>
           <button type="submit" class="btn btn-primary" id="addBtn">Add Todo</button>
         </form>
+      </section>
+
+      <section class="control-panel">
+        <div class="search-group">
+          <label>Search:</label>
+          <input type="text" class="search-input" id="searchInput" placeholder="Search Tasks..." autocomplete="off">
+        </div>
       </section>
 
       <section id="todosContainer" class="todos-list"></section>

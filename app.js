@@ -1,14 +1,25 @@
-let todos = [];
+let todos = loadTodos();
 
 // DOM Elements
 const addForm = document.getElementById('addForm');
 const taskInput = document.getElementById('taskInput');
+const searchInput = document.getElementById('searchInput');
 const todosContainer = document.getElementById('todosContainer');
 const totalCount = document.getElementById('totalCount');
 const activeCount = document.getElementById('activeCount');
 const completedCount = document.getElementById('completedCount');
 
+// Local Storage
+function saveTodos() {
+  localStorage.setItem('todos', JSON.stringify(todos));
+}
 
+function loadTodos() {
+  const todos = localStorage.getItem('todos');
+  return todos ? JSON.parse(todos) : [];
+}
+
+// Main Function For Todos
 function addTask(title) {
   const task = {
     id: Date.now(),
@@ -18,8 +29,9 @@ function addTask(title) {
   }
 
   todos.unshift(task)
+  saveTodos();
   taskInput.value = '';
-  renderTasks();
+  renderTasks(todos);
 }
 
 function toggleTodo(id) {
@@ -27,12 +39,14 @@ function toggleTodo(id) {
   if (!targetTodo) return;
 
   targetTodo.completed = !targetTodo.completed;
-  renderTasks();
+  saveTodos();
+  renderTasks(todos);
 }
 
 function deleteTodo(id) {
   todos = todos.filter(todo => todo.id !== id);
-  renderTasks();
+  saveTodos();
+  renderTasks(todos);
 }
 
 function editTodoTitle(id, newTitle) {
@@ -40,9 +54,15 @@ function editTodoTitle(id, newTitle) {
   if (!targetTodo) return;
 
   targetTodo.title = escapeHTML(newTitle);
-  renderTasks();
+  saveTodos();
+  renderTasks(todos);
 }
 
+function searchTodo(searchQuery) {
+  if (!searchQuery) renderTasks(todos);
+  const filteredTodo = todos.filter((todo) => todo.title.toLowerCase().includes(searchQuery));
+  renderTasks(filteredTodo);
+}
 
 function updateStats() {
   totalCount.textContent = todos.length;
@@ -57,7 +77,7 @@ function escapeHTML(text) {
   return div.innerHTML;
 }
 
-function renderTasks() {
+function renderTasks(todos) {
   if (todos.length === 0) {
     todosContainer.innerHTML = `
       <div class="empty-state">
@@ -89,7 +109,7 @@ function renderTasks() {
 
   updateStats();
 }
-renderTasks();
+renderTasks(todos);
 
 
 // Event Listeners
@@ -133,14 +153,19 @@ todosContainer.addEventListener("click", (event) => {
       if (newTitle) {
         editTodoTitle(targetTodoId, newTitle);
       } else {
-        renderTasks();
+        renderTasks(todos);
       }
     }
 
     input.addEventListener('blur', saveEdit, {once: true});
     input.addEventListener('keydown', (event) => {
       if (event.key === 'Enter') saveEdit();
-      if (event.key === 'Escape') renderTasks();
+      if (event.key === 'Escape') renderTasks(todos);
     })
   }
-})
+});
+
+searchInput.addEventListener('input', (event) => {
+  const searchQuery = event.target.value.trim();
+  searchTodo(searchQuery);
+});

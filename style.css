@@ -89,6 +89,39 @@ body {
   border-color: #667eea;
 }
 
+.control-panel {
+  padding: 30px 15px;
+  background: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.search-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.search-group label{
+  font-weight: bold;
+  color: #495057;
+}
+
+.search-group input {
+  max-width: 100%;
+  flex: 1;
+  padding: 15px;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.search-group input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
 .btn {
   padding: 15px 30px;
   border: none;
