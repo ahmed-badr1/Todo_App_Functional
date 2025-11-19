@@ -38,9 +38,18 @@
       </section>
 
       <section class="control-panel">
-        <div class="search-group">
+        <div class="filter-group">
           <label>Search:</label>
           <input type="text" class="search-input" id="searchInput" placeholder="Search Tasks..." autocomplete="off">
+        </div>
+
+        <div class="filter-group">
+            <label>filter:</label>
+            <select id="filterSelect">
+                <option value="all">All</option>
+                <option value="active">Active</option>
+                <option value="completed">Completed</option>
+            </select>
         </div>
       </section>
 

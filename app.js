@@ -1,9 +1,13 @@
 let todos = loadTodos();
+// 
+let searchQuery = '';
+let currentFilter = 'all';
 
 // DOM Elements
 const addForm = document.getElementById('addForm');
 const taskInput = document.getElementById('taskInput');
 const searchInput = document.getElementById('searchInput');
+const filterSelect = document.getElementById('filterSelect');
 const todosContainer = document.getElementById('todosContainer');
 const totalCount = document.getElementById('totalCount');
 const activeCount = document.getElementById('activeCount');
@@ -31,7 +35,7 @@ function addTask(title) {
   todos.unshift(task)
   saveTodos();
   taskInput.value = '';
-  renderTasks(todos);
+  renderTasks();
 }
 
 function toggleTodo(id) {
@@ -40,13 +44,13 @@ function toggleTodo(id) {
 
   targetTodo.completed = !targetTodo.completed;
   saveTodos();
-  renderTasks(todos);
+  renderTasks();
 }
 
 function deleteTodo(id) {
   todos = todos.filter(todo => todo.id !== id);
   saveTodos();
-  renderTasks(todos);
+  renderTasks();
 }
 
 function editTodoTitle(id, newTitle) {
@@ -55,13 +59,23 @@ function editTodoTitle(id, newTitle) {
 
   targetTodo.title = escapeHTML(newTitle);
   saveTodos();
-  renderTasks(todos);
+  renderTasks();
 }
 
-function searchTodo(searchQuery) {
-  if (!searchQuery) renderTasks(todos);
-  const filteredTodo = todos.filter((todo) => todo.title.toLowerCase().includes(searchQuery));
-  renderTasks(filteredTodo);
+function getFilteredTodos() {
+  let filtered = [...todos];
+
+  if (currentFilter === 'active') {
+    filtered = filtered.filter(todo => !todo.completed);
+  } else if (currentFilter === 'completed') {
+    filtered = filtered.filter(todo => todo.completed);
+  }
+
+  if (searchQuery) {
+    filtered = filtered.filter((todo) => todo.title.toLowerCase().includes(searchQuery.toLowerCase()));
+  }
+
+  return filtered;
 }
 
 function updateStats() {
@@ -77,23 +91,25 @@ function escapeHTML(text) {
   return div.innerHTML;
 }
 
-function renderTasks(todos) {
-  if (todos.length === 0) {
+function renderTasks() {
+  const filteredTodos = getFilteredTodos();
+  
+  if (filteredTodos.length === 0) {
     todosContainer.innerHTML = `
       <div class="empty-state">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
             d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
         </svg>
-        <h2>No todos yet!</h2>
-        <p>Add your first task to get started.</p>
+        <h2>${searchQuery ? 'No tasks found' : 'No todos yet!'}</h2>
+        <p>${searchQuery ? 'Try a different search term.' :'Add your first task to get started.'}</p>
       </div>
     `;
     updateStats();
     return;
   }
 
-  todosContainer.innerHTML = todos.map((todo) => `
+  todosContainer.innerHTML = filteredTodos.map((todo) => `
     <div class="todo-item ${todo.completed ? "completed": ""}" data-id="${todo.id}">
       <input class="todo-checkbox" type="checkbox" ${todo.completed ? "checked": ""}>
       <div class="todo-content">
@@ -109,7 +125,7 @@ function renderTasks(todos) {
 
   updateStats();
 }
-renderTasks(todos);
+renderTasks();
 
 
 // Event Listeners
@@ -153,19 +169,24 @@ todosContainer.addEventListener("click", (event) => {
       if (newTitle) {
         editTodoTitle(targetTodoId, newTitle);
       } else {
-        renderTasks(todos);
+        renderTasks();
       }
     }
 
     input.addEventListener('blur', saveEdit, {once: true});
     input.addEventListener('keydown', (event) => {
       if (event.key === 'Enter') saveEdit();
-      if (event.key === 'Escape') renderTasks(todos);
+      if (event.key === 'Escape') renderTasks();
     })
   }
 });
 
 searchInput.addEventListener('input', (event) => {
-  const searchQuery = event.target.value.trim();
-  searchTodo(searchQuery);
+  searchQuery = event.target.value.trim();
+  renderTasks();
 });
+
+filterSelect.addEventListener('change', (event) => {
+  currentFilter = event.target.value;
+  renderTasks();
+})
